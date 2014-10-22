@@ -1,0 +1,17 @@
+#
+# Copyright (C) Cybernetica AS
+#
+# All rights are reserved. Reproduction in whole or part is prohibited
+# without the written consent of the copyright owner. The usage of this
+# code is subject to the appropriate license agreement.
+#
+
+# This file defines the following variables:
+#   SharemindLibmodapiCxx_INCLUDE_DIRS - include directories
+#   SharemindLibmodapiCxx_LIBRARIES    - libraries to link against
+#   SharemindLibmodapiCxx_DEFINITIONS  - required compiler definitions
+
+
+SET(SharemindLibmodapiCxx_INCLUDE_DIRS @LIBMODAPICXX_INSTALL_INCLUDE_DIRS@)
+SET(SharemindLibmodapiCxx_LIBRARIES @LIBMODAPICXX_INSTALL_LINK_LIBRARIES@)
+SET(SharemindLibmodapiCxx_DEFINITIONS @LIBMODAPICXX_INSTALL_DEFINITIONS@)
