@@ -13,6 +13,7 @@
 #include <cassert>
 #include <exception>
 #include <new>
+#include <sharemind/compiler-support/GccPR54526.h>
 #include <type_traits>
 #include "libmodapi.h"
 
@@ -146,12 +147,9 @@ inline ModuleApiError allocThrow(const ModuleApiError e) {
 
 template <typename CType> struct TypeInv;
 
-/* Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=54526 : */
-#define SHAREMIND_LIBMODAPI_CXX_GCC47_WORKAROUND_DIGRAPH
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TYPEINV(t) \
     template <> struct TypeInv<t> { using type = ::Sharemind ## t; };\
-    template <> struct TypeInv< \
-        SHAREMIND_LIBMODAPI_CXX_GCC47_WORKAROUND_DIGRAPH ::Sharemind ## t> \
+    template <> struct TypeInv<SHAREMIND_GCCPR54526::Sharemind ## t> \
     { using type = t; };
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TAGGETTER(type) \
