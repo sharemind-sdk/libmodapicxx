@@ -26,6 +26,7 @@ namespace sharemind {
 using SyscallCallable = ::SharemindSyscallCallable;
 using SyscallWrapper = ::SharemindSyscallWrapper;
 using Facility = ::SharemindFacility;
+using ModuleApiError = ::SharemindModuleApiError;
 
 class ModuleApi;
 class Module;
@@ -69,14 +70,6 @@ class Pdpi;
     SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS__(ClassName, \
                                                         facility, \
                                                         Facility)
-
-#define SHAREMIND_LIBMODAPI_CXX_EXCEPT_OVERRIDES_TEST(capture,error) \
-    ([capture]{ \
-        const ModuleApiError e = (error); \
-        if (e == ::SHAREMIND_MODULE_API_OUT_OF_MEMORY) \
-            throw std::bad_alloc(); \
-        return e; \
-    }())
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_PDCHILD_STUFF(ClassName) \
     inline size_t numPds() const noexcept \
@@ -144,6 +137,12 @@ class Pdpi;
 
 namespace Detail {
 namespace libmodapi {
+
+inline ModuleApiError allocThrow(const ModuleApiError e) {
+    if (e == ::SHAREMIND_MODULE_API_OUT_OF_MEMORY)
+        throw std::bad_alloc();
+    return e;
+}
 
 template <typename CType> struct TypeInv;
 
@@ -233,8 +232,7 @@ private: /* Fields: */
     public: /* Methods: */ \
         inline Exception(const ::Sharemind ## ClassName & c) \
             : ModuleApiExceptionBase( \
-                      SHAREMIND_LIBMODAPI_CXX_EXCEPT_OVERRIDES_TEST( \
-                              &c, \
+                      Detail::libmodapi::allocThrow( \
                               ::Sharemind ## ClassName ## _lastError(&c)), \
                       ::Sharemind ## ClassName ## _lastErrorString(&c)) \
         {} \
@@ -596,9 +594,8 @@ public: /* Methods: */
                           ::SharemindModuleApi_new(&error, &errorStr);
                   if (modapi)
                       return modapi;
-                  throw Exception(
-                        SHAREMIND_LIBMODAPI_CXX_EXCEPT_OVERRIDES_TEST(=,error),
-                        errorStr);
+                  throw Exception(Detail::libmodapi::allocThrow(error),
+                                  errorStr);
               }())
     {
         ::SharemindModuleApi_setTagWithDestructor(
@@ -729,7 +726,6 @@ inline Module::Module(ModuleApi & moduleApi,
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_PARENT_GETTER
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_PDK_AND_SYSCALL_CHILD_STUFF
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_PDCHILD_STUFF
-#undef SHAREMIND_LIBMODAPI_CXX_EXCEPT_OVERRIDES_TEST
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_SELF_FACILITY_FUNCTIONS
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS__
