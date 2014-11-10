@@ -147,9 +147,13 @@ namespace libmodapi {
 
 template <typename CType> struct TypeInv;
 
+/* Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=54526 : */
+#define SHAREMIND_LIBMODAPI_CXX_GCC47_WORKAROUND_DIGRAPH
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TYPEINV(t) \
     template <> struct TypeInv<t> { using type = ::Sharemind ## t; };\
-    template <> struct TypeInv<::Sharemind ## t> { using type = t; };
+    template <> struct TypeInv< \
+        SHAREMIND_LIBMODAPI_CXX_GCC47_WORKAROUND_DIGRAPH ::Sharemind ## t> \
+    { using type = t; };
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TAGGETTER(type) \
     inline type * modapiGetTag(const ::Sharemind ## type * const o) noexcept \
