@@ -13,9 +13,13 @@
 #include <cassert>
 #include <exception>
 #include <new>
+#include <sharemind/ApplyTuples.h>
 #include <sharemind/compiler-support/GccPR54526.h>
 #include <sharemind/compiler-support/GccPR55015.h>
+#include <sharemind/NoNullTuple.h>
+#include <tuple>
 #include <type_traits>
+#include <utility>
 #include "libmodapi.h"
 
 
@@ -29,6 +33,7 @@ using SyscallCallable = ::SharemindSyscallCallable;
 using SyscallWrapper = ::SharemindSyscallWrapper;
 using Facility = ::SharemindFacility;
 using ModuleApiError = ::SharemindModuleApiError;
+using ModuleApiContext = ::SharemindModuleApiContext;
 
 class ModuleApi;
 class Module;
@@ -185,6 +190,64 @@ inline typename TypeInv<CType>::type * mustTag(CType * const ssc) noexcept {
 template <typename CType>
 inline typename TypeInv<CType>::type * optChild(CType * const ssc) noexcept
 { return ssc ? mustTag(ssc) : nullptr; }
+
+using Context = ModuleApiContext;
+using XM = decltype(::std::declval<Context &>().moduleFacility);
+
+template <typename OrigTpl, typename Tpl, size_t I, typename F>
+struct XF {
+  constexpr XM operator()() const noexcept {
+    return [](Context * ctx)
+        { noNullGet<I, OrigTpl>(*static_cast<Tpl *>(ctx->internal))(); };
+  }
+};
+
+template <typename OrigTpl, typename Tpl, size_t I>
+struct XF<OrigTpl, Tpl, I, decltype(nullptr)> {
+  constexpr XM operator()() const noexcept { return nullptr; }
+};
+
+template <size_t I, typename OrigTpl, typename Tpl, typename ... Fs>
+struct GetGetters;
+template <size_t I, typename OrigTpl, typename Tpl>
+struct GetGetters<I, OrigTpl, Tpl> {
+    static constexpr ::std::tuple<> get() { return ::std::tuple<>{}; }
+};
+#define SHAREMIND_LIBMODAPI_CXX_GETGETTERS \
+    ::std::tuple_cat(::std::make_tuple(XF<OrigTpl, \
+                                          Tpl, \
+                                          I, \
+                                          typename ::std::decay<F>::type>{}()),\
+                     GetGetters<I + 1u, OrigTpl, Tpl, Fs...>::get())
+template <size_t I, typename OrigTpl, typename Tpl, typename F, typename ... Fs>
+struct GetGetters<I, OrigTpl, Tpl, F, Fs...> {
+    static constexpr auto get() -> decltype(SHAREMIND_LIBMODAPI_CXX_GETGETTERS)
+    { return SHAREMIND_LIBMODAPI_CXX_GETGETTERS; }
+};
+#undef SHAREMIND_LIBMODAPI_CXX_GETGETTERS
+
+template <typename ... Args> Context * constructContext(Args && ... args)
+{ return new Context{::std::forward<Args>(args)...}; }
+
+template <typename> struct AlwaysXM { using type = XM; };
+
+template <typename ... Args> Context * createContext(Args && ... args) {
+    using OrigTpl = ::std::tuple<Args...>;
+    using Tpl = typename MakeNoNullTuple<OrigTpl>::type;
+    Tpl * const tpl = new Tpl(makeNoNullTuple(::std::forward<Args>(args)...));
+
+    return applyTuples(
+                 constructContext<
+                     Tpl *,
+                     decltype(::std::declval<Context &>().destructor),
+                     typename AlwaysXM<Args>::type...>,
+                 ::std::make_tuple(tpl,
+                                   [](Context * x){
+                                       delete static_cast<Tpl *>(x->internal);
+                                       delete x;
+                                   }),
+                 GetGetters<0u, OrigTpl, Tpl, Args...>::get());
+}
 
 } /* namespace libmodapi { */
 } /* namespace Detail { */
@@ -600,6 +663,8 @@ public: /* Types: */
 
     SHAREMIND_LIBMODAPI_CXX_DEFINE_EXCEPTION(ModuleApi);
 
+    using Context = ModuleApiContext;
+
 public: /* Methods: */
 
     ModuleApi(ModuleApi &&) = delete;
@@ -607,16 +672,38 @@ public: /* Methods: */
     ModuleApi & operator=(ModuleApi &&) = delete;
     ModuleApi & operator=(const ModuleApi &) = delete;
 
-    inline ModuleApi()
-        : m_c([]{
+    inline ModuleApi() : ModuleApi(nullptr) {}
+    inline ModuleApi(decltype(nullptr), decltype(nullptr), decltype(nullptr))
+        : ModuleApi() {}
+
+    template <typename FindModuleFacility = decltype(nullptr),
+              typename FindPdFacility = decltype(nullptr),
+              typename FindPdpiFacility = decltype(nullptr)>
+    inline ModuleApi(FindModuleFacility && findModuleFacility
+                            = FindModuleFacility(),
+                     FindPdFacility && findPdFacility = FindPdFacility(),
+                     FindPdpiFacility && findPdpiFacility = FindPdpiFacility())
+        : ModuleApi(Detail::libmodapi::createContext(
+                        ::std::forward<FindModuleFacility>(findModuleFacility),
+                        ::std::forward<FindPdFacility>(findPdFacility),
+                        ::std::forward<FindPdpiFacility>(findPdpiFacility)))
+    {}
+
+    inline ModuleApi(Context * const ctx)
+        : m_c([ctx]{
                   ModuleApiError error;
                   const char * errorStr;
-                  ::SharemindModuleApi * const modapi =
-                          ::SharemindModuleApi_new(&error, &errorStr);
-                  if (modapi)
-                      return modapi;
-                  throw Exception(Detail::libmodapi::allocThrow(error),
-                                  errorStr);
+                  try {
+                      ::SharemindModuleApi * const modapi =
+                              ::SharemindModuleApi_new(ctx, &error, &errorStr);
+                      if (modapi)
+                          return modapi;
+                      throw Exception(Detail::libmodapi::allocThrow(error),
+                                      errorStr);
+                  } catch (...) {
+                      delete ctx;
+                      throw;
+                  }
               }())
     {
         #define SHAREMIND_LIBMODAPI_CXX_MODULEAPI_L1 \
