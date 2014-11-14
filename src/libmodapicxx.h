@@ -147,7 +147,7 @@ namespace libmodapi {
 
 inline ModuleApiError allocThrow(const ModuleApiError e) {
     if (e == ::SHAREMIND_MODULE_API_OUT_OF_MEMORY)
-        throw std::bad_alloc();
+        throw ::std::bad_alloc();
     return e;
 }
 
@@ -268,7 +268,7 @@ inline const char * ModuleApiError_toString(const ModuleApiError e) noexcept
   *Exception
 *******************************************************************************/
 
-class ModuleApiExceptionBase: public std::exception {
+class ModuleApiExceptionBase: public ::std::exception {
 
 public: /* Methods: */
 
