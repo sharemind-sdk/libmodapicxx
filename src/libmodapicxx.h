@@ -197,8 +197,10 @@ using XM = decltype(::std::declval<Context &>().moduleFacility);
 template <typename OrigTpl, typename Tpl, size_t I, typename F>
 struct XF {
   constexpr XM operator()() const noexcept {
-    return [](Context * ctx)
-        { noNullGet<I, OrigTpl>(*static_cast<Tpl *>(ctx->internal))(); };
+    return [](Context * ctx, const char * signature) -> Facility const * {
+        return noNullGet<I, OrigTpl>(*static_cast<Tpl *>(ctx->internal))(
+                    signature);
+    };
   }
 };
 
