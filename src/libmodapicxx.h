@@ -257,8 +257,6 @@ template <typename ... Args> Context * createContext(Args && ... args) {
   ModuleApiError
 *******************************************************************************/
 
-using ModuleApiError = ::SharemindModuleApiError;
-
 inline const char * ModuleApiError_toString(const ModuleApiError e) noexcept
 { return ::SharemindModuleApiError_toString(e); }
 
