@@ -16,11 +16,11 @@
 #include <sharemind/ApplyTuples.h>
 #include <sharemind/compiler-support/GccPR54526.h>
 #include <sharemind/compiler-support/GccPR55015.h>
+#include <sharemind/libmodapi/libmodapi.h>
 #include <sharemind/NoNullTuple.h>
 #include <tuple>
 #include <type_traits>
 #include <utility>
-#include "libmodapi.h"
 
 
 namespace sharemind {
