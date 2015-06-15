@@ -165,7 +165,7 @@ template <typename CType> struct TypeInv;
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TYPEINV(t) \
     template <> struct TypeInv<t> { using type = ::Sharemind ## t; };\
-    template <> struct TypeInv<SHAREMIND_GCCPR54526::Sharemind ## t> \
+    template <> struct TypeInv<SHAREMIND_GCCPR54526_WORKAROUND::Sharemind ## t>\
     { using type = t; };
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TAGGETTER(type) \
