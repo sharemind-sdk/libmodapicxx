@@ -597,6 +597,8 @@ private: /* Fields: */
 
 class Module {
 
+    friend class ModuleApi;
+
 public: /* Types: */
 
     SHAREMIND_LIBMODAPI_CXX_DEFINE_EXCEPTION(Module);
@@ -608,10 +610,6 @@ public: /* Methods: */
     Module(const Module &) = delete;
     Module & operator=(Module &&) = delete;
     Module & operator=(const Module &) = delete;
-
-    Module(ModuleApi & moduleApi,
-           const char * const filename,
-           const char * const configuration) __attribute__ ((nonnull(3)));
 
     virtual inline ~Module() noexcept {
         if (m_c) {
@@ -654,6 +652,12 @@ public: /* Methods: */
 
     inline void * handle() const noexcept
     { return ::SharemindModule_handle(m_c); }
+
+private: /* Methods: */
+
+    Module(ModuleApi & moduleApi,
+           const char * const filename,
+           const char * const configuration) __attribute__ ((nonnull(3)));
 
 private: /* Fields: */
 
@@ -753,10 +757,14 @@ public: /* Methods: */
     SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS(ModuleApi, pd, Pd)
     SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS(ModuleApi, pdpi, Pdpi)
 
+    template <typename ... Args>
+    inline Module & loadModule(Args && ... args)
+    { return *(new Module(*this, std::forward<Args>(args)...)); }
+
 private: /* Methods: */
 
-    ::SharemindModule & newModule(const char * const filename,
-                                  const char * const configuration)
+    ::SharemindModule & newModule_(const char * const filename,
+                                   const char * const configuration)
             __attribute__((nonnull(2)))
     {
         assert(filename);
@@ -839,7 +847,7 @@ inline Pd::Pd(Pdk & pdk, const char * name, const char * configuration)
 inline Module::Module(ModuleApi & moduleApi,
                       const char * const filename,
                       const char * const configuration)
-    : m_c(&moduleApi.newModule(filename, configuration))
+    : m_c(&moduleApi.newModule_(filename, configuration))
 {
     try {
         {
