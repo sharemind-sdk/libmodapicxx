@@ -245,7 +245,7 @@ template <typename> struct AlwaysXM { using type = XM; };
 
 template <typename ... Args> Context * createContext(Args && ... args) {
     using OrigTpl = ::std::tuple<Args...>;
-    using Tpl = typename MakeNoNullTuple<Args...>::type;
+    using Tpl = NoNullTuple_t<typename std::decay<Args>::type...>;
     Tpl * const tpl = new Tpl(makeNoNullTuple(::std::forward<Args>(args)...));
 
     return applyTuples(
