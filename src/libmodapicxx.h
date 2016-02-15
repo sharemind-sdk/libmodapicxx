@@ -57,7 +57,7 @@ class Pdpi;
   Some helper macros
 *******************************************************************************/
 
-#define SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS__(ClassName,fF,FF) \
+#define SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS_(ClassName,fF,FF) \
     inline void set ## FF(const char * name, \
                           void * facility, \
                           void * context = nullptr) \
@@ -79,14 +79,14 @@ class Pdpi;
     { return ::Sharemind ## ClassName ## _ ## fF(m_c, (assert(name), name)); }
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS(ClassName,fN,FN) \
-    SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS__(ClassName, \
-                                                        fN ## Facility, \
-                                                        FN ## Facility)
+    SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS_(ClassName, \
+                                                       fN ## Facility, \
+                                                       FN ## Facility)
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_SELF_FACILITY_FUNCTIONS(ClassName) \
-    SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS__(ClassName, \
-                                                        facility, \
-                                                        Facility)
+    SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS_(ClassName, \
+                                                       facility, \
+                                                       Facility)
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_PDCHILD_STUFF(ClassName) \
     inline size_t numPds() const noexcept \
@@ -898,6 +898,6 @@ inline Module::Module(ModuleApi & moduleApi,
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_PDCHILD_STUFF
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_SELF_FACILITY_FUNCTIONS
 #undef SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS
-#undef SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS__
+#undef SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS_
 
 #endif /* SHAREMIND_LIBMODAPICXX_LIBMODAPICXX_H */
