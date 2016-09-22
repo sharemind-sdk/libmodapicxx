@@ -26,6 +26,7 @@
 #include <sharemind/ApplyTuples.h>
 #include <sharemind/compiler-support/GccPR54526.h>
 #include <sharemind/compiler-support/GccPR55015.h>
+#include <sharemind/DebugOnly.h>
 #include <sharemind/libmodapi/libmodapi.h>
 #include <sharemind/NoNullTuple.h>
 #include <tuple>
@@ -61,7 +62,7 @@ class Pdpi;
     inline void set ## FF(const char * name, \
                           void * facility, \
                           void * context = nullptr) \
-            __attribute__ ((nonnull(2))) \
+            SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         ::Sharemind ## ClassName ## _set ## FF(m_c, \
                                                (assert(name), name), \
@@ -69,13 +70,13 @@ class Pdpi;
                                                context); \
     } \
     inline bool unset ## FF(const char * name) noexcept \
-            __attribute__ ((nonnull(2))) \
+            SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         return ::Sharemind ## ClassName ## _unset ## FF(m_c, \
                                                         (assert(name), name)); \
     } \
     inline const SharemindFacility * fF(const char * name) const noexcept \
-            __attribute__ ((nonnull(2))) \
+            SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { return ::Sharemind ## ClassName ## _ ## fF(m_c, (assert(name), name)); }
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS(ClassName,fN,FN) \
@@ -96,7 +97,7 @@ class Pdpi;
                     ::Sharemind ## ClassName ## _pd(m_c, index)); \
     } \
     inline Pd * findPd(const char * name) \
-            const noexcept __attribute__ ((nonnull(2))) \
+            const noexcept SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         assert(name); \
         return Detail::libmodapi::optChild( \
@@ -111,14 +112,14 @@ class Pdpi;
                     ::Sharemind ## ClassName ## _syscall(m_c, index)); \
     } \
     inline Syscall * findSyscall(const char * const signature) \
-            const noexcept __attribute__ ((nonnull(2))) \
+            const noexcept SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         assert(signature); \
         return Detail::libmodapi::optChild( \
                     ::Sharemind ## ClassName ## _findSyscall(m_c, signature));\
     } \
     inline SyscallWrapper syscallWrapper(const char * const signature) \
-            const noexcept __attribute__ ((nonnull(2))) \
+            const noexcept SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         assert(signature); \
         return ::Sharemind ## ClassName ## _syscallWrapper(m_c, signature); \
@@ -130,7 +131,7 @@ class Pdpi;
                     ::Sharemind ## ClassName ## _pdk(m_c, index)); \
     } \
     inline Pdk * findPdk(const char * name) \
-            const noexcept __attribute__ ((nonnull(2))) \
+            const noexcept SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         assert(name); \
         return Detail::libmodapi::optChild( \
@@ -462,7 +463,7 @@ public: /* Methods: */
     Pd & operator=(const Pd &) = delete;
 
     inline Pd(Pdk & pdk, const char * name, const char * configuration)
-        __attribute__((nonnull(3)));
+        SHAREMIND_NDEBUG_ONLY(__attribute__((nonnull(3))));
 
     virtual inline ~Pd() noexcept {
         if (m_c) {
@@ -574,7 +575,7 @@ private: /* Methods: */
     inline ~Pdk() noexcept {}
 
     ::SharemindPd & newPd(const char * name, const char * configuration)
-            __attribute__ ((nonnull(2)))
+            SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2))))
     {
         assert(name);
         ::SharemindPd * const pd =
@@ -657,7 +658,8 @@ private: /* Methods: */
 
     Module(ModuleApi & moduleApi,
            const char * const filename,
-           const char * const configuration) __attribute__ ((nonnull(3)));
+           const char * const configuration)
+            SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(3))));
 
 private: /* Fields: */
 
@@ -765,7 +767,7 @@ private: /* Methods: */
 
     ::SharemindModule & newModule_(const char * const filename,
                                    const char * const configuration)
-            __attribute__((nonnull(2)))
+            SHAREMIND_NDEBUG_ONLY(__attribute__((nonnull(2))))
     {
         assert(filename);
         ::SharemindModule * const m =
