@@ -24,6 +24,7 @@
 #include <exception>
 #include <new>
 #include <sharemind/ApplyTuples.h>
+#include <sharemind/compiler-support/GccVersion.h>
 #include <sharemind/compiler-support/GccPR54526.h>
 #include <sharemind/compiler-support/GccPR55015.h>
 #include <sharemind/DebugOnly.h>
@@ -688,6 +689,12 @@ public: /* Methods: */
     ModuleApi & operator=(ModuleApi &&) = delete;
     ModuleApi & operator=(const ModuleApi &) = delete;
 
+    /** \todo Limit this to specific versions as GCC devs make progress at
+              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
+    #if defined(SHAREMIND_GCC_VERSION)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+    #endif
     inline ModuleApi() : ModuleApi(nullptr) {}
     inline ModuleApi(decltype(nullptr), decltype(nullptr), decltype(nullptr))
         : ModuleApi() {}
@@ -704,6 +711,11 @@ public: /* Methods: */
                         ::std::forward<FindPdFacility>(findPdFacility),
                         ::std::forward<FindPdpiFacility>(findPdpiFacility)))
     {}
+    /** \todo Limit this to specific versions as GCC devs make progress at
+              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
+    #if defined(SHAREMIND_GCC_VERSION)
+    #pragma GCC diagnostic pop
+    #endif
 
     inline ModuleApi(Context * const ctx)
         : m_c([ctx]{
