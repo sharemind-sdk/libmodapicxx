@@ -17,19 +17,12 @@
 # For further information, please contact us at sharemind@cyber.ee.
 #
 
-SET(PACKAGE_VERSION "@LIBMODAPICXX_VERSION@")
-IF(NOT SharemindLibmodapiCxx_QUIET)
-    MESSAGE(STATUS "Sharemind libmodapi(C++) version: ${PACKAGE_VERSION}")
-ENDIF()
+# This file defines the following variables:
+#   SharemindLibModapiCxx_INCLUDE_DIRS - include directories
+#   SharemindLibModapiCxx_LIBRARIES    - libraries to link against
+#   SharemindLibModapiCxx_DEFINITIONS  - required compiler definitions
 
-IF("${PACKAGE_VERSION}" VERSION_EQUAL "${PACKAGE_FIND_VERSION}")
-  SET(PACKAGE_VERSION_EXACT TRUE)
-ELSE()
-  SET(PACKAGE_VERSION_EXACT FALSE)
-ENDIF()
-IF(("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}")
-   OR ("${PACKAGE_FIND_VERSION}" VERSION_LESS "@LIBMODAPICXX_COMPAT_VERSION@"))
-  SET(PACKAGE_VERSION_COMPATIBLE FALSE)
-ELSE()
-  SET(PACKAGE_VERSION_COMPATIBLE TRUE)
-ENDIF()
+
+SET(SharemindLibModapiCxx_INCLUDE_DIRS @SharemindLibModapiCxx_INSTALL_INCLUDE_DIRS@)
+SET(SharemindLibModapiCxx_LIBRARIES @SharemindLibModapiCxx_INSTALL_LINK_LIBRARIES@)
+SET(SharemindLibModapiCxx_DEFINITIONS @SharemindLibModapiCxx_INSTALL_DEFINITIONS@)
