@@ -31,17 +31,17 @@ INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
 FIND_PACKAGE(SharemindCxxHeaders REQUIRED)
-FIND_PACKAGE(SharemindLibmodapi 0.3.0 REQUIRED)
+FIND_PACKAGE(SharemindLibModapi 0.3.0 REQUIRED)
 
 SET(LIBMODAPICXX_INSTALL_DEFINITIONS ${SharemindCxxHeaders_DEFINITIONS}
-                                     ${SharemindLibmodapi_DEFINITIONS})
+                                     ${SharemindLibModapi_DEFINITIONS})
 LIST(REMOVE_DUPLICATES LIBMODAPICXX_INSTALL_DEFINITIONS)
 SET(LIBMODAPICXX_INSTALL_LINK_LIBRARIES ${SharemindCxxHeaders_LIBRARIES}
-                                        ${SharemindLibmodapi_LIBRARIES})
+                                        ${SharemindLibModapi_LIBRARIES})
 LIST(REMOVE_DUPLICATES LIBMODAPICXX_INSTALL_LINK_LIBRARIES)
 SET(LIBMODAPICXX_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include"
                                       ${SharemindCxxHeaders_INCLUDE_DIRS}
-                                      ${SharemindLibmodapi_INCLUDE_DIRS})
+                                      ${SharemindLibModapi_INCLUDE_DIRS})
 LIST(REMOVE_DUPLICATES LIBMODAPICXX_INSTALL_INCLUDE_DIRS)
 
 FILE(GLOB_RECURSE SHAREMIND_LIBMODAPICXX_HEADERS
