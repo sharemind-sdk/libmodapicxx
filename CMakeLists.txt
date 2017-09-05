@@ -40,17 +40,18 @@ INSTALL(FILES ${SharemindLibModapiCxx_HEADERS}
         COMPONENT "dev")
 
 # Install cmake files:
-SET(SharemindLibModapiCxx_INSTALL_DEFINITIONS ${SharemindCxxHeaders_DEFINITIONS}
-                                     ${SharemindLibModapi_DEFINITIONS})
-LIST(REMOVE_DUPLICATES SharemindLibModapiCxx_INSTALL_DEFINITIONS)
-SET(SharemindLibModapiCxx_INSTALL_LINK_LIBRARIES ${SharemindCxxHeaders_LIBRARIES}
-                                        ${SharemindLibModapi_LIBRARIES})
-LIST(REMOVE_DUPLICATES SharemindLibModapiCxx_INSTALL_LINK_LIBRARIES)
-SET(SharemindLibModapiCxx_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include"
-                                      ${SharemindCxxHeaders_INCLUDE_DIRS}
-                                      ${SharemindLibModapi_INCLUDE_DIRS})
-LIST(REMOVE_DUPLICATES SharemindLibModapiCxx_INSTALL_INCLUDE_DIRS)
-SharemindUseCMakeFindFiles()
+SharemindCreateCMakeFindFiles(
+    DEFINITIONS
+        ${SharemindCxxHeaders_DEFINITIONS}
+        ${SharemindLibModapi_DEFINITIONS}
+    LIBRARIES
+        ${SharemindCxxHeaders_LIBRARIES}
+        ${SharemindLibModapi_LIBRARIES}
+    INCLUDE_DIRS
+        "${CMAKE_INSTALL_PREFIX}/include"
+        ${SharemindCxxHeaders_INCLUDE_DIRS}
+        ${SharemindLibModapi_INCLUDE_DIRS}
+)
 
 
 # Packaging:
