@@ -26,7 +26,7 @@ INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 FIND_PACKAGE(SharemindCMakeHelpers REQUIRED)
 
 SharemindSetProjectVersion()
-SET(SharemindLibModapiCxx_COMPAT_VERSION "${SharemindLibModapiCxx_VERSION}")
+
 
 FIND_PACKAGE(SharemindCxxHeaders REQUIRED)
 FIND_PACKAGE(SharemindLibModapi 0.3.0 REQUIRED)
