@@ -24,6 +24,7 @@
 #include <exception>
 #include <new>
 #include <sharemind/ApplyTuples.h>
+#include <sharemind/AssertReturn.h>
 #include <sharemind/compiler-support/GccVersion.h>
 #include <sharemind/compiler-support/GccPR54526.h>
 #include <sharemind/compiler-support/GccPR55015.h>
@@ -66,7 +67,7 @@ class Pdpi;
             SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         ::Sharemind ## ClassName ## _set ## FF(m_c, \
-                                               (assert(name), name), \
+                                               assertReturn(name), \
                                                facility, \
                                                context); \
     } \
@@ -74,11 +75,11 @@ class Pdpi;
             SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
     { \
         return ::Sharemind ## ClassName ## _unset ## FF(m_c, \
-                                                        (assert(name), name)); \
+                                                        assertReturn(name)); \
     } \
     inline const SharemindFacility * fF(const char * name) const noexcept \
             SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2)))) \
-    { return ::Sharemind ## ClassName ## _ ## fF(m_c, (assert(name), name)); }
+    { return ::Sharemind ## ClassName ## _ ## fF(m_c, assertReturn(name)); }
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS(ClassName,fN,FN) \
     SHAREMIND_LIBMODAPI_CXX_DEFINE_FACILITY_FUNCTIONS_(ClassName, \
@@ -195,8 +196,8 @@ SHAREMIND_LIBMODAPI_CXX_DEFINE_TYPE_STUFF(Pdpi)
 template <typename CType>
 inline typename TypeInv<CType>::type * mustTag(CType * const ssc) noexcept {
     assert(ssc);
-    typename TypeInv<CType>::type * const sc = modapiGetTag(ssc);
-    return (assert(sc), sc);
+    typename TypeInv<CType>::type * const sc = modapiGetTag(assertReturn(ssc));
+    return assertReturn(sc);
 }
 
 template <typename CType>
@@ -286,7 +287,8 @@ public: /* Methods: */
 
     inline ModuleApiExceptionBase(const ModuleApiError errorCode,
                                   const char * const errorStr)
-        : m_errorCode((assert(errorCode != ::SHAREMIND_MODULE_API_OK),
+        : m_errorCode((static_cast<void>(assert(errorCode
+                                                != ::SHAREMIND_MODULE_API_OK)),
                        errorCode))
         , m_errorStr(errorStr ? errorStr : ModuleApiError_toString(errorCode))
     {}
@@ -358,7 +360,7 @@ public: /* Methods: */
 private: /* Methods: */
 
     inline Syscall(::SharemindSyscall * const sc) noexcept
-        : m_c((assert(sc), sc))
+        : m_c(assertReturn(sc))
     {
         #define SHAREMIND_LIBMODAPI_CXX_SYSCALL_L1 \
             (void * s) { delete static_cast<Syscall *>(s); }
@@ -554,7 +556,7 @@ public: /* Methods: */
 private: /* Methods: */
 
     Pdk(::SharemindPdk * const pdk) noexcept
-        : m_c((assert(pdk), pdk))
+        : m_c(assertReturn(pdk))
     {
         #define SHAREMIND_LIBMODAPI_CXX_PDK_L1 \
             (void * p) noexcept { delete static_cast<Pdk *>(p); }
@@ -578,9 +580,8 @@ private: /* Methods: */
     ::SharemindPd & newPd(const char * name, const char * configuration)
             SHAREMIND_NDEBUG_ONLY(__attribute__ ((nonnull(2))))
     {
-        assert(name);
         ::SharemindPd * const pd =
-                ::SharemindPdk_newPd(m_c, name, configuration);
+                ::SharemindPdk_newPd(m_c, assertReturn(name), configuration);
         if (pd)
             return *pd;
         throw Exception(*this);
