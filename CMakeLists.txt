@@ -28,7 +28,7 @@ FIND_PACKAGE(SharemindCMakeHelpers 1.2 REQUIRED)
 SharemindSetProjectVersion()
 
 
-FIND_PACKAGE(SharemindCxxHeaders REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders 0.2.0 REQUIRED)
 FIND_PACKAGE(SharemindLibModapi 0.3.0 REQUIRED)
 
 FILE(GLOB_RECURSE SharemindLibModapiCxx_HEADERS
@@ -62,7 +62,7 @@ SharemindAddComponentPackage("dev"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
         "libsharemind-modapi-dev (>= 0.3.0)"
-        "libsharemind-cxxheaders-dev (>= 0.1.0)"
+        "libsharemind-cxxheaders-dev (>= 0.2.0)"
         "libstdc++-dev"
 )
 SharemindPackagingFinalize()
