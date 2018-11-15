@@ -26,8 +26,6 @@
 #include <sharemind/ApplyTuples.h>
 #include <sharemind/AssertReturn.h>
 #include <sharemind/compiler-support/GccVersion.h>
-#include <sharemind/compiler-support/GccPR54526.h>
-#include <sharemind/compiler-support/GccPR55015.h>
 #include <sharemind/DebugOnly.h>
 #include <sharemind/libmodapi/libmodapi.h>
 #include <sharemind/NoNullTuple.h>
@@ -168,7 +166,7 @@ template <typename CType> struct TypeInv;
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TYPEINV(t) \
     template <> struct TypeInv<t> { using type = ::Sharemind ## t; };\
-    template <> struct TypeInv<SHAREMIND_GCCPR54526_WORKAROUND::Sharemind ## t>\
+    template <> struct TypeInv<::Sharemind ## t>\
     { using type = t; };
 
 #define SHAREMIND_LIBMODAPI_CXX_DEFINE_TAGGETTER(type) \
@@ -362,21 +360,10 @@ private: /* Methods: */
     inline Syscall(::SharemindSyscall * const sc) noexcept
         : m_c(assertReturn(sc))
     {
-        #define SHAREMIND_LIBMODAPI_CXX_SYSCALL_L1 \
-            (void * s) { delete static_cast<Syscall *>(s); }
-        #if SHAREMIND_GCCPR55015
-        struct F { static void f SHAREMIND_LIBMODAPI_CXX_SYSCALL_L1 };
-        #endif
         ::SharemindSyscall_setTagWithDestructor(
                     sc,
                     this,
-                    #if SHAREMIND_GCCPR55015
-                    &F::f
-                    #else
-                    []SHAREMIND_LIBMODAPI_CXX_SYSCALL_L1
-                    #endif
-                    );
-        #undef SHAREMIND_LIBMODAPI_CXX_SYSCALL_L1
+                    [](void * s) { delete static_cast<Syscall *>(s); });
     }
 
     inline ~Syscall() noexcept {}
@@ -558,21 +545,10 @@ private: /* Methods: */
     Pdk(::SharemindPdk * const pdk) noexcept
         : m_c(assertReturn(pdk))
     {
-        #define SHAREMIND_LIBMODAPI_CXX_PDK_L1 \
-            (void * p) noexcept { delete static_cast<Pdk *>(p); }
-        #if SHAREMIND_GCCPR55015
-        struct F { static void f SHAREMIND_LIBMODAPI_CXX_PDK_L1 };
-        #endif
         ::SharemindPdk_setTagWithDestructor(
                     pdk,
                     this,
-                    #if SHAREMIND_GCCPR55015
-                    &F::f
-                    #else
-                    []SHAREMIND_LIBMODAPI_CXX_PDK_L1
-                    #endif
-                    );
-        #undef SHAREMIND_LIBMODAPI_CXX_PDK_L1
+                    [](void * p) noexcept { delete static_cast<Pdk *>(p); });
     }
 
     inline ~Pdk() noexcept {}
@@ -690,9 +666,8 @@ public: /* Methods: */
     ModuleApi & operator=(ModuleApi &&) = delete;
     ModuleApi & operator=(const ModuleApi &) = delete;
 
-    /** \todo Limit this to specific versions as GCC devs make progress at
-              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
-    #if defined(SHAREMIND_GCC_VERSION)
+    /** BEGIN https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
+    #if defined(SHAREMIND_GCC_VERSION) && (SHAREMIND_GCC_VERSION < 80000)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
     #endif
@@ -712,9 +687,8 @@ public: /* Methods: */
                         ::std::forward<FindPdFacility>(findPdFacility),
                         ::std::forward<FindPdpiFacility>(findPdpiFacility)))
     {}
-    /** \todo Limit this to specific versions as GCC devs make progress at
-              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
-    #if defined(SHAREMIND_GCC_VERSION)
+    /** END https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
+    #if defined(SHAREMIND_GCC_VERSION) && (SHAREMIND_GCC_VERSION < 80000)
     #pragma GCC diagnostic pop
     #endif
 
@@ -735,26 +709,15 @@ public: /* Methods: */
                   }
               }())
     {
-        #define SHAREMIND_LIBMODAPI_CXX_MODULEAPI_L1 \
-            (void * m) noexcept { \
-                ModuleApi * const moduleApi = \
-                        static_cast<ModuleApi *>(m); \
-                moduleApi->m_c = nullptr; \
-                delete moduleApi; \
-            }
-        #if SHAREMIND_GCCPR55015
-        struct F { static void f SHAREMIND_LIBMODAPI_CXX_MODULEAPI_L1 };
-        #endif
         ::SharemindModuleApi_setTagWithDestructor(
                     m_c,
                     this,
-                    #if SHAREMIND_GCCPR55015
-                    &F::f
-                    #else
-                    []SHAREMIND_LIBMODAPI_CXX_MODULEAPI_L1
-                    #endif
-                    );
-        #undef SHAREMIND_LIBMODAPI_CXX_MODULEAPI_L1
+                    [](void * m) noexcept {
+                        ModuleApi * const moduleApi =
+                                static_cast<ModuleApi *>(m);
+                        moduleApi->m_c = nullptr;
+                        delete moduleApi;
+                    });
     }
 
     virtual inline ~ModuleApi() noexcept {
@@ -804,25 +767,14 @@ private: /* Fields: */
 inline Pdpi::Pdpi(Pd & pd)
     : m_c(&pd.newPdpi())
 {
-    #define SHAREMIND_LIBMODAPI_CXX_PDPI_L1 \
-        (void * p) noexcept { \
-            Pdpi * const pdpi = static_cast<Pdpi *>(p); \
-            pdpi->m_c = nullptr; \
-            delete pdpi; \
-        }
-    #if SHAREMIND_GCCPR55015
-    struct F { static void f SHAREMIND_LIBMODAPI_CXX_PDPI_L1 };
-    #endif
     ::SharemindPdpi_setTagWithDestructor(
                 m_c,
                 this,
-                #if SHAREMIND_GCCPR55015
-                &F::f
-                #else
-                []SHAREMIND_LIBMODAPI_CXX_PDPI_L1
-                #endif
-                );
-    #undef SHAREMIND_LIBMODAPI_CXX_PDPI_L1
+                [](void * p) noexcept {
+                    Pdpi * const pdpi = static_cast<Pdpi *>(p);
+                    pdpi->m_c = nullptr;
+                    delete pdpi;
+                });
 }
 
 
@@ -833,25 +785,14 @@ inline Pdpi::Pdpi(Pd & pd)
 inline Pd::Pd(Pdk & pdk, const char * name, const char * configuration)
     : m_c(&pdk.newPd(name, configuration))
 {
-    #define SHAREMIND_LIBMODAPI_CXX_PD_L1 \
-        (void * p) noexcept { \
-            Pd * const pd = static_cast<Pd *>(p); \
-            pd->m_c = nullptr; \
-            delete pd; \
-        }
-    #if SHAREMIND_GCCPR55015
-    struct F { static void f SHAREMIND_LIBMODAPI_CXX_PD_L1 };
-    #endif
     ::SharemindPd_setTagWithDestructor(
                 m_c,
                 this,
-                #if SHAREMIND_GCCPR55015
-                &F::f
-                #else
-                []SHAREMIND_LIBMODAPI_CXX_PD_L1
-                #endif
-                );
-    #undef SHAREMIND_LIBMODAPI_CXX_PD_L1
+                [](void * p) noexcept {
+                    Pd * const pd = static_cast<Pd *>(p);
+                    pd->m_c = nullptr;
+                    delete pd;
+                });
 }
 
 
@@ -874,25 +815,14 @@ inline Module::Module(ModuleApi & moduleApi,
             for (size_t i = 0u; i < npdks; i++)
                 new Pdk(::SharemindModule_pdk(m_c, i));
         }
-        #define SHAREMIND_LIBMODAPI_CXX_MODULE_L1 \
-            (void * m) noexcept { \
-                Module * const module = static_cast<Module *>(m); \
-                module->m_c = nullptr; \
-                delete module; \
-            }
-        #if SHAREMIND_GCCPR55015
-        struct F { static void f SHAREMIND_LIBMODAPI_CXX_MODULE_L1 };
-        #endif
         ::SharemindModule_setTagWithDestructor(
                     m_c,
                     this,
-                    #if SHAREMIND_GCCPR55015
-                    &F::f
-                    #else
-                    []SHAREMIND_LIBMODAPI_CXX_MODULE_L1
-                    #endif
-                    );
-        #undef SHAREMIND_LIBMODAPI_CXX_MODULE_L1
+                    [](void * m) noexcept {
+                        Module * const module = static_cast<Module *>(m);
+                        module->m_c = nullptr;
+                        delete module;
+                    });
     } catch (...) {
         ::SharemindModule_free(m_c);
         throw;
