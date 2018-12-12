@@ -26,14 +26,14 @@
 #include <sharemind/ApplyTuples.h>
 #include <sharemind/AssertReturn.h>
 #include <sharemind/compiler-support/GccVersion.h>
-#include <sharemind/compiler-support/GccPR54526.h>
-#include <sharemind/compiler-support/GccPR55015.h>
 #include <sharemind/DebugOnly.h>
 #include <sharemind/libmodapi/libmodapi.h>
 #include <sharemind/NoNullTuple.h>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include "GccPR54526.h"
+#include "GccPR55015.h"
 
 
 namespace sharemind {
