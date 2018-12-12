@@ -690,9 +690,8 @@ public: /* Methods: */
     ModuleApi & operator=(ModuleApi &&) = delete;
     ModuleApi & operator=(const ModuleApi &) = delete;
 
-    /** \todo Limit this to specific versions as GCC devs make progress at
-              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
-    #if defined(SHAREMIND_GCC_VERSION)
+    /* BEGIN https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
+    #if defined(SHAREMIND_GCC_VERSION) && (SHAREMIND_GCC_VERSION < 80000)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
     #endif
@@ -712,9 +711,8 @@ public: /* Methods: */
                         ::std::forward<FindPdFacility>(findPdFacility),
                         ::std::forward<FindPdpiFacility>(findPdpiFacility)))
     {}
-    /** \todo Limit this to specific versions as GCC devs make progress at
-              https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
-    #if defined(SHAREMIND_GCC_VERSION)
+    /* END https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70808 */
+    #if defined(SHAREMIND_GCC_VERSION) && (SHAREMIND_GCC_VERSION < 80000)
     #pragma GCC diagnostic pop
     #endif
 
