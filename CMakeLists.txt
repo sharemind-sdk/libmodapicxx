@@ -23,32 +23,34 @@ PROJECT(SharemindLibModapiCxx VERSION "0.3.4" LANGUAGES "CXX")
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
-FIND_PACKAGE(SharemindCMakeHelpers 1.3 REQUIRED)
+FIND_PACKAGE(SharemindCMakeHelpers 1.6 REQUIRED)
 
 
-FIND_PACKAGE(SharemindCxxHeaders 0.2.0 REQUIRED)
-FIND_PACKAGE(SharemindLibModapi 0.3.0 REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders 0.8.0 REQUIRED)
+FIND_PACKAGE(SharemindLibModapi 0.4.0 REQUIRED)
 
 FILE(GLOB_RECURSE SharemindLibModapiCxx_HEADERS
      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 ADD_CUSTOM_TARGET("include_libmodapicxx_headers_in_IDE"
                   SOURCES ${SharemindLibModapiCxx_HEADERS})
+SharemindAddInterfaceLibrary(LibModapiCxx)
+TARGET_INCLUDE_DIRECTORIES(LibModapiCxx
+    INTERFACE
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src> # TODO
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    )
+TARGET_LINK_LIBRARIES(LibModapiCxx
+    INTERFACE
+        Sharemind::CxxHeaders
+        Sharemind::LibModapi
+    )
 INSTALL(FILES ${SharemindLibModapiCxx_HEADERS}
         DESTINATION "include/sharemind/libmodapi"
         COMPONENT "dev")
-
-# Install cmake files:
-SharemindCreateCMakeFindFiles(
-    DEFINITIONS
-        ${SharemindCxxHeaders_DEFINITIONS}
-        ${SharemindLibModapi_DEFINITIONS}
-    LIBRARIES
-        ${SharemindCxxHeaders_LIBRARIES}
-        ${SharemindLibModapi_LIBRARIES}
-    INCLUDE_DIRS
-        "${CMAKE_INSTALL_PREFIX}/include"
-        ${SharemindCxxHeaders_INCLUDE_DIRS}
-        ${SharemindLibModapi_INCLUDE_DIRS}
+SharemindCreateCMakeFindFilesForTarget(LibModapiCxx
+    DEPENDENCIES
+        "SharemindCxxHeaders 0.8.0"
+        "SharemindLibModapi 0.4.0"
 )
 
 
@@ -59,8 +61,8 @@ SharemindAddComponentPackage("dev"
     DESCRIPTION "Sharemind Module API C++ wrapper development headers"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
-        "libsharemind-modapi-dev (>= 0.3.0)"
-        "libsharemind-cxxheaders-dev (>= 0.2.0)"
+        "libsharemind-modapi-dev (>= 0.4.0)"
+        "libsharemind-cxxheaders-dev (>= 0.8.0)"
         "libstdc++-dev"
 )
 SharemindPackagingFinalize()
