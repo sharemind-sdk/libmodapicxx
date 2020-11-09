@@ -31,9 +31,8 @@ FIND_PACKAGE(SharemindLibModapi 0.4.0 REQUIRED)
 
 FILE(GLOB_RECURSE SharemindLibModapiCxx_HEADERS
      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
-ADD_CUSTOM_TARGET("include_libmodapicxx_headers_in_IDE"
-                  SOURCES ${SharemindLibModapiCxx_HEADERS})
-SharemindAddInterfaceLibrary(LibModapiCxx)
+SharemindAddInterfaceLibrary(LibModapiCxx
+    EXPOSE_FILES ${SharemindLibModapiCxx_HEADERS})
 TARGET_INCLUDE_DIRECTORIES(LibModapiCxx
     INTERFACE
         # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src> # TODO
