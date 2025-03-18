@@ -26,7 +26,7 @@ INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 FIND_PACKAGE(SharemindCMakeHelpers 1.6 REQUIRED)
 
 
-FIND_PACKAGE(SharemindCxxHeaders 0.9.0 REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders 0.10.1 REQUIRED)
 FIND_PACKAGE(SharemindLibModapi 0.4.0 REQUIRED)
 
 FILE(GLOB_RECURSE SharemindLibModapiCxx_HEADERS
@@ -48,7 +48,7 @@ INSTALL(FILES ${SharemindLibModapiCxx_HEADERS}
         COMPONENT "dev")
 SharemindCreateCMakeFindFilesForTarget(LibModapiCxx
     DEPENDENCIES
-        "SharemindCxxHeaders 0.9.0"
+        "SharemindCxxHeaders 0.10.1"
         "SharemindLibModapi 0.4.0"
 )
 
@@ -61,7 +61,7 @@ SharemindAddComponentPackage("dev"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
         "libsharemind-modapi-dev (>= 0.4.0)"
-        "libsharemind-cxxheaders-dev (>= 0.9.0)"
+        "libsharemind-cxxheaders-dev (>= 0.10.1)"
         "libstdc++-dev"
 )
 SharemindPackagingFinalize()
