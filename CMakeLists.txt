@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 Cybernetica
+# Copyright (C) Cybernetica
 #
 # Research/Commercial License Usage
 # Licensees holding a valid Research License or Commercial License
@@ -18,15 +18,15 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
-PROJECT(SharemindLibModapiCxx VERSION "0.5.0" LANGUAGES "CXX")
+PROJECT(SharemindLibModapiCxx VERSION "0.5.1" LANGUAGES "CXX")
 
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
-FIND_PACKAGE(SharemindCMakeHelpers 1.6 REQUIRED)
+FIND_PACKAGE(SharemindCMakeHelpers 1.8 REQUIRED)
 
 
-FIND_PACKAGE(SharemindCxxHeaders 0.10.1 REQUIRED)
+FIND_PACKAGE(SharemindCxxHeaders 0.11.0 REQUIRED)
 FIND_PACKAGE(SharemindLibModapi 0.4.0 REQUIRED)
 
 FILE(GLOB_RECURSE SharemindLibModapiCxx_HEADERS
@@ -48,7 +48,7 @@ INSTALL(FILES ${SharemindLibModapiCxx_HEADERS}
         COMPONENT "dev")
 SharemindCreateCMakeFindFilesForTarget(LibModapiCxx
     DEPENDENCIES
-        "SharemindCxxHeaders 0.10.1"
+        "SharemindCxxHeaders 0.11.0"
         "SharemindLibModapi 0.4.0"
 )
 
@@ -61,7 +61,7 @@ SharemindAddComponentPackage("dev"
     DEB_SECTION "libdevel"
     DEB_DEPENDS
         "libsharemind-modapi-dev (>= 0.4.0)"
-        "libsharemind-cxxheaders-dev (>= 0.10.1)"
+        "libsharemind-cxxheaders-dev (>= 0.11.0)"
         "libstdc++-dev"
 )
 SharemindPackagingFinalize()
